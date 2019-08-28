@@ -1,0 +1,23 @@
+Package: clusterperm
+Title: Cluster-Permutation Tests for Time-Series Data from Factorial Experiments
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Dale",
+           family = "Barr",
+           role = c("aut", "cre"),
+           email = "dalejbarr@protonmail.com",
+           comment = c(ORCID = "0000-0002-1121-4608"))
+Description: Functions to facilitate cluster-based permutation tests for analyzing time series data from factorially-designed experiments.
+License: CC BY-SA 4.0
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    broom,
+    dplyr,
+    tidyr,
+    purrr,
+    tibble,
+    rlang,
+    magrittr,
+    stats
+RoxygenNote: 6.1.1
