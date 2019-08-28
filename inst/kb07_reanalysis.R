@@ -1,7 +1,7 @@
 ## Re-analysis of Kronmuller & Barr (2007)
 
-devtools::load_all("clusterperm")
-devtools::load_all("exchangr")
+library("clusterperm") # devtools::load_all("clusterperm")
+library("exchangr")    # devtools::load_all("exchangr")
 library("tidyverse")
 
 set.seed(1000) # for reproducibility
