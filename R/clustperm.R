@@ -97,10 +97,12 @@ aov_by_bin <- function(.data, bin, formula) {
 #' @export
 detect_clusters <- function(.data, bin, stat, p, alpha = .05) {
   x2 <- .data %>%
-    dplyr::arrange({{bin}}) %>%
-    dplyr::mutate(sig = as.integer(({{p}} < alpha) * sign({{stat}})))
-  runs <- rle(x2[["sig"]])
+    dplyr::arrange({{bin}})
+  sig <- as.integer( (dplyr::pull(x2, {{p}}) < alpha) *
+                     sign(dplyr::pull(x2, {{stat}})) )
+  runs <- rle(sig)
   run_ix <- which(runs$values != 0L)
+  mystat <- dplyr::pull(x2, {{stat}})
   if (length(run_ix) == 0L) {
     tibble::tibble(b0 = NA, b1 = NA, sign = NA_integer_, cms = 0)
   } else {
@@ -114,8 +116,8 @@ detect_clusters <- function(.data, bin, stat, p, alpha = .05) {
       t1 <- t0 + runs$lengths[.x] - 1L
       tibble::tibble(b0 = ifelse(is.na(t0), NA, bins[t0]),
                      b1 = ifelse(is.na(t1), NA, bins[t1]),
-                     sign = sign(x2[["stat"]][t0]),
-                     cms = abs(sum(x2[["stat"]][t0:t1])))
+                     sign = sign(mystat[t0]),
+                     cms = abs(sum(mystat[t0:t1])))
     })
   }
 }
