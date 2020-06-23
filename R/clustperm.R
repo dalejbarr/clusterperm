@@ -78,11 +78,10 @@ NULL
 #' TODO examples
 #' @export
 aov_by_bin <- function(.data, bin, formula) {
-  dplyr::group_by(.data, {{bin}}) %>%
-    tidyr::nest(.key = "d") %>%
-      dplyr::mutate(result = purrr::map(d, .tidy_anova, formula)) %>%
+  tidyr::nest(.data, d = c(-{{bin}})) %>%
+    dplyr::mutate(.result = purrr::map(d, .tidy_anova, formula)) %>%
       dplyr::select(-d) %>%
-      tidyr::unnest()
+      tidyr::unnest(c(.result))
 }
 
 #' Detect clusters and calculate mass statistics
@@ -131,13 +130,12 @@ detect_clusters <- function(.data, bin, stat, p, alpha = .05) {
 #' @export 
 detect_clusters_by_effect <- function(.data, effect, bin, stat, p, alpha = .05) {
   .data %>%
-    dplyr::group_by({{effect}}) %>%
-    tidyr::nest() %>%
+    tidyr::nest(data = c(-{{effect}})) %>%
     dplyr::mutate(clust = purrr::map(data,
                                      detect_clusters,
                                      {{bin}}, {{stat}}, {{p}})) %>%
     dplyr::select(-data) %>%
-    tidyr::unnest()
+    tidyr::unnest(c(clust))
 }
 
 #' Generate null-hypothesis distributions for cluster mass statistics
@@ -152,17 +150,19 @@ detect_clusters_by_effect <- function(.data, effect, bin, stat, p, alpha = .05) 
 #' @details Generates null-hypothesis distributions by the following algorithm: For each of the \code{n} Monte Carlo runs, (1) randomly permute labels in the dataset according to the relabeling function \code{fn}; (2) run \code{\link{aov_by_bin}} on the resulting data, the result of which is passed to (3) \code{\link{detect_clusters_by_effect}}, and (4) store the maximum cluster mass statistic for each effect on each run.
 #' @export 
 cluster_nhds <- function(n, .data, bin, formula, fn, ...) {
-  purrr::rerun(n, {
+  res <- purrr::rerun(n, {
     fn(.data = .data, ...) %>%
-      tidyr::unnest() %>%
+      tidyr::unnest(cols = c(data)) %>%
       aov_by_bin({{bin}}, {{formula}}) %>%
       detect_clusters_by_effect(effect, {{bin}}, stat, p) %>%
       dplyr::group_by(effect) %>%
       dplyr::summarize(maxcms = max(cms)) %>%
       dplyr::ungroup()
-  }) %>%
+  })
+
+  res %>%
     dplyr::bind_rows() %>%
-    tidyr::nest(-effect) %>%
+    tidyr::nest(data = c(-effect)) %>%
     dplyr::mutate(nhd = purrr::map(data, dplyr::pull, maxcms)) %>%
     dplyr::select(-data)
 }
