@@ -152,7 +152,6 @@ detect_clusters_by_effect <- function(.data, effect, bin, stat, p, alpha = .05) 
 cluster_nhds <- function(n, .data, bin, formula, fn, ...) {
   res <- purrr::rerun(n, {
     fn(.data = .data, ...) %>%
-      tidyr::unnest(cols = c(data)) %>%
       aov_by_bin({{bin}}, {{formula}}) %>%
       detect_clusters_by_effect(effect, {{bin}}, stat, p) %>%
       dplyr::group_by(effect) %>%

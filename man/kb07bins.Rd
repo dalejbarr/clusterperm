@@ -4,7 +4,8 @@
 \name{kb07bins}
 \alias{kb07bins}
 \title{Visual-World Eyetracking Data from Kronmüller & Barr (2007)}
-\format{A data frame with 15680 rows and 6 variables:
+\format{
+A data frame with 15680 rows and 6 variables:
 \describe{
   \item{SubjID}{Unique identifier for each subject}
   \item{Speaker}{Speaker condition (Same, Diff)}
@@ -12,7 +13,8 @@
   \item{Load}{Cognitive Load (Yes, No)}
   \item{bin}{Time bin (-200 to 1500 ms in steps of 50 ms)}
   \item{TAS}{Target Advantage Score}
-}}
+}
+}
 \source{
 Kronmüller & Barr (2007), Perspective-free pragmatics: Broken precedents and the recovery-from-preemption hypothesis. Journal of Memory and Language, 56, 436-455.
 }
